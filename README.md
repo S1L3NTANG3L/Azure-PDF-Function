@@ -58,6 +58,19 @@ POST /api/MergePDFDocuments
 **Response:**
 - Returns a merged PDF file as a stream
 
+### Add Watermark to PDF
+**Endpoint:**
+```
+POST /api/AddWatermarkToPdf
+```
+**Request:**
+- Content-Type: `multipart/form-data`
+- Attach multiple PDF files
+- text watermarkText
+
+**Response:**
+- Returns a PDF file as a stream
+
 ### Convert Document to PDF
 **Endpoint:**
 ```

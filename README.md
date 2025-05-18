@@ -65,7 +65,7 @@ POST /api/AddWatermarkToPdf
 ```
 **Request:**
 - Content-Type: `multipart/form-data`
-- Attach multiple PDF files
+- Attach PDF file
 - text watermarkText
 
 **Response:**

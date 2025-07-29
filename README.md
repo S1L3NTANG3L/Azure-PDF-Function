@@ -1,117 +1,72 @@
-# PDF Function - Azure Functions
+# Azure PDF Function
 
-## Overview
-This Azure Functions project provides two key functionalities for processing PDF documents:
-1. **MergePDFDocuments**: Merges multiple uploaded PDF documents into a single file.
-2. **ConvertDocumentToPdf**: Converts documents stored in Microsoft OneDrive or SharePoint to PDF using Microsoft Graph API.
+A snazzy set of Azure Functions for automating your PDF-tinkering urges: merging, converting, and watermarking PDF documents using .NET, iTextSharp, and Microsoft Graph. Because we all know manual PDF editing is so last decade.
 
-These functions are built using C# and utilize the Azure Functions SDK.
+---
 
 ## Features
-- **Merge Multiple PDFs**: Allows merging multiple PDF files into a single document.
-- **Convert Office Files to PDF**: Uses Microsoft Graph API to convert `.docx`, `.xlsx`, or other supported formats to PDF.
-- **Handles Large Files**: Uses `RequestFormLimits` to support large file uploads.
-- **Integration with Microsoft Graph API**: Securely authenticates using client credentials for file conversion.
-- **Error Logging**: Logs errors using `ILogger`.
+
+- **MergePDFDocuments**: Combine multiple PDF files into a single mighty PDF.
+- **ConvertDocumentToPdf**: Convert documents from Microsoft OneDrive/SharePoint (via Microsoft Graph) into that universally misunderstood format: PDF.
+- **AddWatermarkToPdf**: Slap a custom watermark onto your PDFs and assert dominance.
 
 ## Prerequisites
-- **.NET SDK** (Latest version compatible with Azure Functions)
-- **Azure Functions Core Tools**
-- **Azure Subscription**
-- **Microsoft Graph API Access**
-  - Registered Azure AD App with required permissions
-  - `ClientId`, `TenantId`, and `ClientSecret` for authentication
-- **iTextSharp** for PDF processing
 
-## Installation & Setup
-### 1. Clone the Repository
-```sh
-git clone <repository-url>
-cd PDFFunction
+- .NET Core & Azure Functions runtime
+- Microsoft Graph API access (for conversion)
+- iTextSharp library
+- Microsoft.Identity.Client, Newtonsoft.Json, and all the usual suspects
+
+## Usage
+
+### Merging PDFs
+
+**POST** to `/api/MergePDFDocuments`  
+Content-Type: `multipart/form-data`  
+Attach your PDF files.
+
+### Converting Office Files to PDF
+
+**POST** to `/api/ConvertDocumentToPdf`  
+Content-Type: `application/json`  
+Body example:
+```json
+{
+  "ClientId": "<azure-app-client-id>",
+  "TenantId": "<azure-tenant-id>",
+  "ClientSecret": "<azure-app-client-secret>",
+  "driveId": "<drive-id>",
+  "fileId": "<file-id>"
+}
 ```
 
-### 2. Install Dependencies
-Ensure you have the required NuGet packages installed:
-```sh
-dotnet add package Microsoft.Azure.WebJobs.Extensions.Http
-dotnet add package Microsoft.Identity.Client
-dotnet add package iTextSharp
-dotnet add package Newtonsoft.Json
-```
+### Watermarking PDFs
 
-### 3. Run the Azure Function Locally
-```sh
-dotnet build
-func start
-```
+**POST** to `/api/AddWatermarkToPdf`  
+Content-Type: `multipart/form-data`  
+Fields:
+- `watermarkText`: The text to haunt your PDF.
+- `watermarkColor`: (optional) Named colour or hex, e.g. `#FF0000`.
+- `watermarkOpacity`: (optional) A float between 0 and 1.
+- `watermarkFont`: (optional) Eg: `helvetica`, `times-bold`, etc.
+- File: The PDF to bless with your watermark.
 
-## Endpoints
-### Merge PDF Documents
-**Endpoint:**
-```
-POST /api/MergePDFDocuments
-```
-**Request:**
-- Content-Type: `multipart/form-data`
-- Attach multiple PDF files
+## Local Development
 
-**Response:**
-- Returns a merged PDF file as a stream
-
-### Add Watermark to PDF
-**Endpoint:**
-```
-POST /api/AddWatermarkToPdf
-```
-**Request:**
-- Content-Type: `multipart/form-data`
-- Attach PDF file
-- text watermarkText
-
-**Response:**
-- Returns a PDF file as a stream
-
-### Convert Document to PDF
-**Endpoint:**
-```
-POST /api/ConvertDocumentToPdf
-```
-**Request:**
-- Content-Type: `application/json`
-- JSON Payload:
-  ```json
-  {
-    "ClientId": "<AzureAD_ClientId>",
-    "TenantId": "<AzureAD_TenantId>",
-    "ClientSecret": "<AzureAD_ClientSecret>",
-    "driveId": "<OneDrive_SharePoint_DriveId>",
-    "fileId": "<FileId_to_Convert>"
-  }
-  ```
-
-**Response:**
-- Returns a converted PDF file as a response stream
+1. Clone repository.
+2. Restore NuGet packages.
+3. Set up your Azure credentials for the convert function.
+4. Run locally with VS Code, Visual Studio, or Azure Functions Core Tools.
+5. POST with your favourite REST client—no one’s judging.
 
 ## Error Handling
-If an error occurs, the function returns a `400 Bad Request` with detailed error logs captured using `ILogger`.
 
-## Deployment
-1. **Publish to Azure**
-```sh
-dotnet publish -c Release
-```
-2. **Deploy using Azure CLI**
-```sh
-az functionapp deployment source config-zip -g <resource-group> -n <function-app-name> --src <zip-file>
-```
-
-## Notes
-- Temporary files are stored in the system temp directory and deleted after processing.
-- The `ConvertDocumentToPdf` function requires Microsoft Graph API permissions and Azure AD authentication.
+Because things go wrong, errors are logged and returned with useful messages. Read them. Or ignore at your peril.
 
 ## License
-This project is licensed under the MIT License.
 
-## Author
-Developed by Rechard Preston & Jacqui Muller
+MIT, because open source should be free—like all the PDFs you're manipulating now.
 
+---
+
+*For more details, consult the code. It’s quite chatty.*
